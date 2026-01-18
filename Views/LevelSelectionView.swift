@@ -13,13 +13,14 @@ struct LevelSelectionView: View {
                     .bold()
 
                 NavigationLink("Easy Level (3x3)",
-                    destination: Text("Easy Screen"))
+                    destination: GameView(level: .easy))
 
                 NavigationLink("Medium Level (5x5)",
-                    destination: Text("Medium Screen"))
+                    destination: GameView(level: .medium))
 
                 NavigationLink("Hard Level (7x7)",
-                    destination: Text("Hard Screen"))
+                    destination: GameView(level: .hard))
+
             }
         }
     }
