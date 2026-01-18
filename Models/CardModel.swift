@@ -1,7 +1,12 @@
-//
-//  CardModel.swift
-//  ColorMatchGame
-//
-//  Created by Nipul kanishka  on 2026-01-18.
-//
+import SwiftUI
 
+struct CardModel: Identifiable {
+
+    let id = UUID()
+
+    var color: Color
+
+    var isFaceUp = false
+
+    var isMatched = false
+}
