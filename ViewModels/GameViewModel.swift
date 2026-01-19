@@ -10,6 +10,10 @@ class GameViewModel: ObservableObject {
     @Published var time: Double = 0
     
     @Published var state: GameState = .notStarted
+    
+    @Published var countdown: Int = 3
+    @Published var showCountdown = false
+
 
     var timer: Timer?
 
@@ -62,14 +66,31 @@ class GameViewModel: ObservableObject {
     // 🔵 START BUTTON PRESSED
     func startGame() {
 
-        state = .running
+        // Show countdown first
+        showCountdown = true
+        countdown = 3
 
-        timer?.invalidate()
+        // 1 second countdown timer
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
 
-        timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
-            self.time += 0.01
+            self.countdown -= 1
+
+            if self.countdown == 0 {
+                timer.invalidate()
+
+                self.showCountdown = false
+                self.state = .running
+
+                // Start real game timer
+                self.timer?.invalidate()
+
+                self.timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
+                    self.time += 0.01
+                }
+            }
         }
     }
+
 
     // 🔵 PAUSE BUTTON
     func pauseGame() {
