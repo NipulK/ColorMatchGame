@@ -3,7 +3,6 @@ import SwiftUI
 struct GameView: View {
 
     @StateObject var vm = GameViewModel()
-
     var level: GameLevel
 
     var body: some View {
@@ -32,7 +31,7 @@ struct GameView: View {
                     .cornerRadius(10)
                 }
 
-                // PAUSE / RESUME
+                // PAUSE
                 if vm.state == .running {
                     Button("PAUSE") {
                         withAnimation {
@@ -44,6 +43,7 @@ struct GameView: View {
                     .cornerRadius(8)
                 }
 
+                // RESUME
                 if vm.state == .paused {
                     Button("RESUME") {
                         withAnimation {
@@ -61,7 +61,6 @@ struct GameView: View {
                     Text("🎉 You Win!")
                         .font(.largeTitle)
                         .foregroundColor(.green)
-                        .transition(.scale)
 
                     Button("Play Again") {
                         vm.start(level: level)
@@ -82,19 +81,16 @@ struct GameView: View {
                             .onTapGesture {
                                 vm.selectCard(index: i)
                             }
-                            // 🔥 Card flip animation
                             .animation(.easeInOut(duration: 0.3),
                                        value: vm.cards[i].isFaceUp)
                     }
                 }
                 .padding()
-
-                // 🌫 BLUR WHEN NOT RUNNING
                 .blur(radius: vm.state == .running ? 0 : 5)
                 .disabled(vm.state != .running)
             }
 
-            // 🎯 COUNTDOWN OVERLAY
+            // COUNTDOWN OVERLAY
             if vm.showCountdown {
                 Color.black.opacity(0.6)
                     .edgesIgnoringSafeArea(.all)
@@ -102,13 +98,10 @@ struct GameView: View {
                 Text(vm.countdown > 0 ? "\(vm.countdown)" : "GO!")
                     .font(.system(size: 80, weight: .bold))
                     .foregroundColor(.white)
-                    .transition(.scale)
-                    .animation(.spring(), value: vm.countdown)
             }
         }
         .onAppear {
             vm.start(level: level)
         }
     }
-
 }
