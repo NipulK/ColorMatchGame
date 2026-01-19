@@ -32,6 +32,7 @@ struct CardView: View {
             axis: (x: 0, y: 1, z: 0)
         )
 
+        
         .animation(.easeInOut(duration: 0.4),
                    value: card.isFaceUp)
 
