@@ -41,7 +41,7 @@ struct GameView: View {
                 }
 
                 // RESUME
-                if vm.state == .paused {
+                if vm.state == .paused && !vm.isWin {
                     Button("RESUME") {
                         vm.resumeGame()
                     }
@@ -73,10 +73,43 @@ struct GameView: View {
 
                 // 🌫 BLUR GRID WHEN NEEDED
                 .blur(radius:
-                    (vm.state != .running || vm.showCountdown) ? 8 : 0
+                    (vm.state != .running || vm.showCountdown || vm.isWin) ? 8 : 0
                 )
 
-                .disabled(vm.state != .running || vm.showCountdown)
+                .disabled(vm.state != .running || vm.showCountdown || vm.isWin)
+            }
+
+            // ===== FINISHED PANEL =====
+            if vm.isWin {
+
+                Color.black.opacity(0.6)
+                    .ignoresSafeArea()
+
+                VStack(spacing: 12) {
+
+                    Text("🏆 Level Completed!")
+                        .font(.largeTitle)
+                        .bold()
+                        .foregroundColor(.white)
+
+                    Text("Time: \(String(format: "%.2f", vm.time)) s")
+                        .foregroundColor(.white)
+
+                    Text("Score: \(vm.score)")
+                        .foregroundColor(.white)
+
+                    Button("Play Again") {
+                        vm.start(level: level)
+                    }
+                    .padding()
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+
+                }
+                .padding()
+                .background(Color.black.opacity(0.8))
+                .cornerRadius(15)
             }
 
             // ===== FULL SCREEN COUNTDOWN =====
@@ -84,7 +117,6 @@ struct GameView: View {
 
                 ZStack {
 
-                    // 🔥 FULL DARK BLUR BACKGROUND
                     Color.black
                         .opacity(0.75)
                         .ignoresSafeArea()
@@ -105,7 +137,6 @@ struct GameView: View {
                             .foregroundColor(.white.opacity(0.8))
                     }
                 }
-                // 👉 THIS MAKES IT TRUE FULL SCREEN
                 .frame(maxWidth: .infinity,
                        maxHeight: .infinity)
             }
