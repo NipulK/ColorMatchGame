@@ -52,7 +52,7 @@ struct GameView: View {
 
             // WIN MESSAGE
             if vm.isWin {
-                Text("🎉 You Win!")
+                Text(" You Win!")
                     .font(.largeTitle)
                     .foregroundColor(.green)
 
