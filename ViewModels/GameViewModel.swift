@@ -14,6 +14,8 @@ class GameViewModel: ObservableObject {
     @Published var countdown: Int = 3
     @Published var showCountdown = false
 
+    // 🔵 NEW - for delayed finish panel
+    @Published var showFinishPanel = false
 
     var timer: Timer?
 
@@ -32,6 +34,9 @@ class GameViewModel: ObservableObject {
         score = 0
         firstIndex = nil
         isWin = false
+
+        // 🔵 reset finish panel
+        showFinishPanel = false
 
         let total = level.size * level.size
         let pairCount = total / 2
@@ -66,11 +71,9 @@ class GameViewModel: ObservableObject {
     // 🔵 START BUTTON PRESSED
     func startGame() {
 
-        // Show countdown first
         showCountdown = true
         countdown = 3
 
-        // 1 second countdown timer
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
 
             self.countdown -= 1
@@ -90,7 +93,6 @@ class GameViewModel: ObservableObject {
             }
         }
     }
-
 
     // 🔵 PAUSE BUTTON
     func pauseGame() {
@@ -112,7 +114,6 @@ class GameViewModel: ObservableObject {
     // when user tap
     func selectCard(index: Int) {
 
-        // ❗ NEW: block tap if not running
         if state != .running {
             return
         }
@@ -145,11 +146,17 @@ class GameViewModel: ObservableObject {
             }
 
             if allMatched {
+
                 isWin = true
 
-                // ❗ stop timer when win
+                // stop timer immediately
                 timer?.invalidate()
                 state = .paused
+
+                // ✅ ASYNC AWAIT DELAY
+                Task {
+                    await showFinishWithDelay()
+                }
             }
 
         } else {
@@ -160,5 +167,12 @@ class GameViewModel: ObservableObject {
                 self.cards[second].isFaceUp = false
             }
         }
+    }
+
+    //  ASYNC DELAY FUNCTION
+    @MainActor
+    func showFinishWithDelay() async {
+        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+        showFinishPanel = true
     }
 }

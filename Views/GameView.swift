@@ -81,6 +81,7 @@ struct GameView: View {
 
             // ===== FINISHED PANEL =====
             if vm.isWin {
+                
 
                 Color.black.opacity(0.6)
                     .ignoresSafeArea()
