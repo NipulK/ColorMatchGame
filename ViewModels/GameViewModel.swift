@@ -1,5 +1,5 @@
 import SwiftUI
-import Combine  //@Published are provided by the Combine framework
+import Combine
 
 class GameViewModel: ObservableObject {
 
@@ -7,25 +7,33 @@ class GameViewModel: ObservableObject {
     @Published var score: Int = 0
     @Published var isWin = false
     
-    @Published var time: Double = 0 //time add
+    @Published var time: Double = 0
+    
+    @Published var state: GameState = .notStarted
 
     var timer: Timer?
 
     private var firstIndex: Int? = nil
+    
+    enum GameState {
+        case notStarted
+        case running
+        case paused
+    }
 
-    // Start game for selected level
+    // Prepare cards BUT do not start timer
     func start(level: GameLevel) {
 
         cards.removeAll()
         score = 0
         firstIndex = nil
+        isWin = false
 
         let total = level.size * level.size
         let pairCount = total / 2
 
         var colors: [Color] = []
 
-        // create color pairs
         for _ in 0..<pairCount {
 
             let randomColor = Color(
@@ -38,7 +46,6 @@ class GameViewModel: ObservableObject {
             colors.append(randomColor)
         }
 
-        // if odd (3x3 = 9)
         if total % 2 != 0 {
             colors.append(.gray)
         }
@@ -46,21 +53,48 @@ class GameViewModel: ObservableObject {
         colors.shuffle()
 
         cards = colors.map { CardModel(color: $0) }
-        
-        //time counting part
-        
+
+        // Important: game not started yet
         time = 0
+        state = .notStarted
+    }
+
+    // 🔵 START BUTTON PRESSED
+    func startGame() {
+
+        state = .running
 
         timer?.invalidate()
 
         timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
             self.time += 0.01
         }
+    }
 
+    // 🔵 PAUSE BUTTON
+    func pauseGame() {
+
+        state = .paused
+        timer?.invalidate()
+    }
+
+    // 🔵 RESUME BUTTON
+    func resumeGame() {
+
+        state = .running
+
+        timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
+            self.time += 0.01
+        }
     }
 
     // when user tap
     func selectCard(index: Int) {
+
+        // ❗ NEW: block tap if not running
+        if state != .running {
+            return
+        }
 
         if cards[index].isMatched || cards[index].isFaceUp {
             return
@@ -76,7 +110,6 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // check match logic
     private func checkMatch(first: Int, second: Int) {
 
         if cards[first].color == cards[second].color {
@@ -86,17 +119,20 @@ class GameViewModel: ObservableObject {
 
             score += 1
 
-            // check win
-            let allMatched = cards.allSatisfy { $0.isMatched || $0.color == .gray }
+            let allMatched = cards.allSatisfy {
+                $0.isMatched || $0.color == .gray
+            }
 
             if allMatched {
                 isWin = true
-            }
 
+                // ❗ stop timer when win
+                timer?.invalidate()
+                state = .paused
+            }
 
         } else {
 
-            // hide after milliseconds
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 
                 self.cards[first].isFaceUp = false
@@ -105,4 +141,3 @@ class GameViewModel: ObservableObject {
         }
     }
 }
-
