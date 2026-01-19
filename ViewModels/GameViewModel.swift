@@ -5,6 +5,11 @@ class GameViewModel: ObservableObject {
 
     @Published var cards: [CardModel] = []
     @Published var score: Int = 0
+    @Published var isWin = false
+    
+    @Published var time: Double = 0 //time add
+
+    var timer: Timer?
 
     private var firstIndex: Int? = nil
 
@@ -41,6 +46,17 @@ class GameViewModel: ObservableObject {
         colors.shuffle()
 
         cards = colors.map { CardModel(color: $0) }
+        
+        //time counting part
+        
+        time = 0
+
+        timer?.invalidate()
+
+        timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
+            self.time += 0.01
+        }
+
     }
 
     // when user tap
@@ -69,6 +85,14 @@ class GameViewModel: ObservableObject {
             cards[second].isMatched = true
 
             score += 1
+
+            // check win
+            let allMatched = cards.allSatisfy { $0.isMatched || $0.color == .gray }
+
+            if allMatched {
+                isWin = true
+            }
+
 
         } else {
 

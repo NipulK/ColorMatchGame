@@ -10,13 +10,26 @@ struct GameView: View {
 
         VStack {
 
-            Text("Score: \(vm.score)")
+            Text("Score: \(vm.score)") //score text point
                 .font(.title)
 
             let columns = Array(
                 repeating: GridItem(.flexible()),
                 count: level.size
             )
+            
+            Text("Time: \(String(format: "%.2f", vm.time)) s")
+            
+            if vm.isWin {
+                Text("🎉 You Win!")
+                    .font(.largeTitle)
+                    .foregroundColor(.green)
+
+                Button("Play Again") {
+                    vm.start(level: level)
+                }
+            }
+
 
             LazyVGrid(columns: columns, spacing: 10) {
 
