@@ -9,6 +9,7 @@ struct GameView: View {
 
         ZStack {
 
+            // ===== MAIN GAME UI =====
             VStack(spacing: 10) {
 
                 Text("Score: \(vm.score)")
@@ -20,9 +21,7 @@ struct GameView: View {
                 // START BUTTON
                 if vm.state == .notStarted {
                     Button("START GAME") {
-                        withAnimation {
-                            vm.startGame()
-                        }
+                        vm.startGame()
                     }
                     .font(.title2)
                     .padding()
@@ -34,9 +33,7 @@ struct GameView: View {
                 // PAUSE
                 if vm.state == .running {
                     Button("PAUSE") {
-                        withAnimation {
-                            vm.pauseGame()
-                        }
+                        vm.pauseGame()
                     }
                     .padding()
                     .background(Color.orange)
@@ -46,25 +43,12 @@ struct GameView: View {
                 // RESUME
                 if vm.state == .paused {
                     Button("RESUME") {
-                        withAnimation {
-                            vm.resumeGame()
-                        }
+                        vm.resumeGame()
                     }
                     .padding()
                     .background(Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(8)
-                }
-
-                // WIN
-                if vm.isWin {
-                    Text("🎉 You Win!")
-                        .font(.largeTitle)
-                        .foregroundColor(.green)
-
-                    Button("Play Again") {
-                        vm.start(level: level)
-                    }
                 }
 
                 // GRID
@@ -81,23 +65,49 @@ struct GameView: View {
                             .onTapGesture {
                                 vm.selectCard(index: i)
                             }
-                            .animation(.easeInOut(duration: 0.3),
+                            .animation(.easeInOut,
                                        value: vm.cards[i].isFaceUp)
                     }
                 }
                 .padding()
-                .blur(radius: vm.state == .running ? 0 : 5)
-                .disabled(vm.state != .running)
+
+                // 🌫 BLUR GRID WHEN NEEDED
+                .blur(radius:
+                    (vm.state != .running || vm.showCountdown) ? 8 : 0
+                )
+
+                .disabled(vm.state != .running || vm.showCountdown)
             }
 
-            // COUNTDOWN OVERLAY
+            // ===== FULL SCREEN COUNTDOWN =====
             if vm.showCountdown {
-                Color.black.opacity(0.6)
-                    .edgesIgnoringSafeArea(.all)
 
-                Text(vm.countdown > 0 ? "\(vm.countdown)" : "GO!")
-                    .font(.system(size: 80, weight: .bold))
-                    .foregroundColor(.white)
+                ZStack {
+
+                    // 🔥 FULL DARK BLUR BACKGROUND
+                    Color.black
+                        .opacity(0.75)
+                        .ignoresSafeArea()
+
+                    VStack {
+
+                        Text(
+                          vm.countdown > 0 ? "\(vm.countdown)" : "GO!"
+                        )
+                        .font(.system(size: 120, weight: .heavy))
+                        .foregroundColor(.white)
+                        .scaleEffect(1.3)
+                        .animation(.spring(response: 0.4,
+                                           dampingFraction: 0.6),
+                                   value: vm.countdown)
+
+                        Text("Get Ready!")
+                            .foregroundColor(.white.opacity(0.8))
+                    }
+                }
+                // 👉 THIS MAKES IT TRUE FULL SCREEN
+                .frame(maxWidth: .infinity,
+                       maxHeight: .infinity)
             }
         }
         .onAppear {
