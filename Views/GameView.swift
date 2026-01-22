@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct GameView: View {
+    
 
     @StateObject var vm = GameViewModel()
     var level: GameLevel
