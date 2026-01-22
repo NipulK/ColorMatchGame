@@ -3,17 +3,41 @@ import SwiftUI
 struct GameView: View {
     
     @Environment(\.dismiss) var dismiss
-    
     @StateObject var vm = GameViewModel()
+    
     var level: GameLevel
 
     var body: some View {
 
         ZStack {
 
-            // ===== MAIN GAME UI =====
             VStack(spacing: 10) {
 
+                //  CUSTOM TOP BAR
+                HStack(spacing: 16) {
+
+                    //  Back to Level Selection
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.title2)
+                    }
+
+                    //  Back to Home
+                    Button{
+                        dismiss()
+                    } label: {
+                        Image(systemName: "house.fill")
+                            .font(.title2)
+                    }
+
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.top, 10)
+
+                // ===== GAME UI =====
                 Text("Score: \(vm.score)")
                     .font(.title)
 
@@ -62,7 +86,6 @@ struct GameView: View {
                 LazyVGrid(columns: columns, spacing: 10) {
 
                     ForEach(vm.cards.indices, id: \.self) { i in
-
                         CardView(card: vm.cards[i])
                             .onTapGesture {
                                 vm.selectCard(index: i)
@@ -72,24 +95,18 @@ struct GameView: View {
                     }
                 }
                 .padding()
-
-                // 🌫 BLUR GRID WHEN NEEDED
                 .blur(radius:
                     (vm.state != .running || vm.showCountdown || vm.isWin) ? 8 : 0
                 )
-
                 .disabled(vm.state != .running || vm.showCountdown || vm.isWin)
             }
 
             // ===== FINISHED PANEL =====
             if vm.isWin {
-                
-
                 Color.black.opacity(0.6)
                     .ignoresSafeArea()
 
                 VStack(spacing: 12) {
-
                     Text("🏆 Level Completed!")
                         .font(.largeTitle)
                         .bold()
@@ -108,42 +125,25 @@ struct GameView: View {
                     .background(Color.green)
                     .foregroundColor(.white)
                     .cornerRadius(10)
-
                 }
                 .padding()
                 .background(Color.black.opacity(0.8))
                 .cornerRadius(15)
             }
 
-            // ===== FULL SCREEN COUNTDOWN =====
+            // ===== COUNTDOWN =====
             if vm.showCountdown {
+                Color.black.opacity(0.75)
+                    .ignoresSafeArea()
 
-                ZStack {
-
-                    Color.black
-                        .opacity(0.75)
-                        .ignoresSafeArea()
-
-                    VStack {
-
-                        Text(
-                          vm.countdown > 0 ? "\(vm.countdown)" : "GO!"
-                        )
+                VStack {
+                    Text(vm.countdown > 0 ? "\(vm.countdown)" : "GO!")
                         .font(.system(size: 120, weight: .heavy))
                         .foregroundColor(.white)
-                        .scaleEffect(1.3)
-                        .animation(.spring(response: 0.4,
-                                           dampingFraction: 0.6),
-                                   value: vm.countdown)
-
-                        Text("Get Ready!")
-                            .foregroundColor(.white.opacity(0.8))
-                    }
                 }
-                .frame(maxWidth: .infinity,
-                       maxHeight: .infinity)
             }
         }
+        .navigationBarBackButtonHidden(true)   // hide default back
         .onAppear {
             vm.start(level: level)
         }
