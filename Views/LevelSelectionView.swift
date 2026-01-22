@@ -2,7 +2,7 @@ import SwiftUI
 
 struct LevelSelectionView: View {
 
-    @State private var selectedLevel: GameLevel? = nil
+    @State private var selectedLevel: GameLevel = .easy
     @State private var showRules = false
     @State private var goToGame = false
 
@@ -31,28 +31,27 @@ struct LevelSelectionView: View {
                     showRules = true
                 }
 
-                // 🔹 NAVIGATION TO GAME (hidden)
+                // ✅ HIDDEN NAVIGATION (SAFE)
                 NavigationLink(
-                    destination: {
-                        if let level = selectedLevel {
-                            GameView(level: level)
-                        }
-                    },
+                    destination: GameView(level: selectedLevel),
                     isActive: $goToGame
                 ) {
                     EmptyView()
                 }
             }
             .sheet(isPresented: $showRules) {
-                if let level = selectedLevel {
-                    RulesPopupView(
-                        level: level,
-                        onConfirm: {
-                            showRules = false
+
+                RulesPopupView(
+                    level: selectedLevel,
+                    onConfirm: {
+                        showRules = false
+
+                        // delay to allow sheet dismissal
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             goToGame = true
                         }
-                    )
-                }
+                    }
+                )
             }
         }
     }
