@@ -3,11 +3,11 @@ import SwiftUI
 struct HomeView: View {
 
     @State private var goToDashboard = false
+    @State private var showScoreboardAlert = false
 
     var body: some View {
 
         NavigationView {
-            
 
             ZStack {
 
@@ -27,7 +27,7 @@ struct HomeView: View {
 
                     Spacer()
 
-                    // 🎨 LOGO WITH SOFT GLOW
+                    // 🎨 LOGO
                     ZStack {
                         Circle()
                             .fill(Color.white.opacity(0.08))
@@ -49,7 +49,7 @@ struct HomeView: View {
                             .foregroundColor(.white)
                     }
 
-                    // 🎮 GAME TITLE
+                    // 🎮 TITLE
                     Text("Color Craze")
                         .font(.system(size: 38, weight: .bold))
                         .foregroundColor(.white)
@@ -61,7 +61,7 @@ struct HomeView: View {
 
                     Spacer()
 
-                    // ▶️ PRIMARY ACTION
+                    // ▶️ PLAY BUTTON
                     NavigationLink(
                         destination: LevelSelectionView(),
                         isActive: $goToDashboard
@@ -80,16 +80,34 @@ struct HomeView: View {
                         }
                     }
 
-                    // 🏆 SECONDARY ACTION
+                    // 🏆 SCOREBOARD BUTTON (ALERT)
                     Button {
-                        exit(0) // placeholder
+                        showScoreboardAlert = true
                     } label: {
                         Text("SCOREBOARD")
                             .font(.subheadline)
-                            .foregroundColor(.white.opacity(0.85))
+                            .foregroundColor(.white.opacity(0.9))
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color.white.opacity(0.12))
+                            .cornerRadius(16)
+                    }
+                    .alert("Scoreboard", isPresented: $showScoreboardAlert) {
+                        Button("OK", role: .cancel) { }
+                    } message: {
+                        Text("Scoreboard feature will be added soon.")
+                    }
+
+                    // 🚪 EXIT BUTTON
+                    Button {
+                        exit(0)   // academic/demo purpose
+                    } label: {
+                        Text("EXIT")
+                            .font(.subheadline)
+                            .foregroundColor(.white.opacity(0.8))
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.red.opacity(0.7))
                             .cornerRadius(16)
                     }
 
@@ -100,7 +118,6 @@ struct HomeView: View {
         }
     }
 }
-
 
 //colour
 
