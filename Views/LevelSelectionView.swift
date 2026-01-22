@@ -28,6 +28,7 @@ struct LevelSelectionView: View {
                 showRules = true
             }
         }
+        
         .sheet(isPresented: $showRules) {
 
             if let level = selectedLevel {
