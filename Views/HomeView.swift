@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 struct HomeView: View {
 
     @State private var goToDashboard = false
@@ -9,40 +8,92 @@ struct HomeView: View {
 
         NavigationView {
 
-            VStack(spacing: 30) {
+            ZStack {
 
-                Text("Color Match Game")
-                    .font(.largeTitle)
-                    .bold()
+                // 🌌 BACKGROUND
+                LinearGradient(
+                    colors: [Color(red: 0.15, green: 0.18, blue: 0.35),
+                             Color(red: 0.08, green: 0.09, blue: 0.20)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
 
-                // PLAY BUTTON
-                NavigationLink(
-                    destination: LevelSelectionView(),
-                    isActive: $goToDashboard
-                ) {
-                    Button("PLAY") {
-                        goToDashboard = true
+                VStack(spacing: 20) {
+
+                    Spacer()
+
+                    // 🎨 GAME ICON
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [.pink, .orange, .yellow],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 90, height: 90)
+                        .overlay(
+                            Image(systemName: "square.grid.3x3.fill")
+                                .font(.system(size: 40))
+                                .foregroundColor(.white)
+                        )
+                        .shadow(radius: 10)
+
+                    // 🧩 TITLE
+                    Text("Color Match")
+                        .font(.system(size: 34, weight: .bold))
+                        .foregroundColor(.white)
+
+                    Text("Color Matching Game")
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.7))
+
+                    Spacer()
+
+                    // ▶️ START PLAYING
+                    NavigationLink(
+                        destination: LevelSelectionView(),
+                        isActive: $goToDashboard
+                    ) {
+                        Button {
+                            goToDashboard = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "play.fill")
+                                Text("START PLAYING")
+                                    .fontWeight(.semibold)
+                            }
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green)
+                            .cornerRadius(14)
+                            .shadow(radius: 5)
+                        }
                     }
-                    .font(.title2)
-                    .padding()
-                    .frame(width: 200)
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-                }
 
-                // QUIT BUTTON
-                Button("QUIT") {
-                    exit(0) // academic/demo purpose
+                    // 🏆 SCOREBOARD (for now Quit / placeholder)
+                    Button {
+                        exit(0) // can be replaced with Scoreboard later
+                    } label: {
+                        HStack {
+                            Image(systemName: "trophy.fill")
+                            Text("SCOREBOARD")
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.orange)
+                        .cornerRadius(14)
+                        .shadow(radius: 5)
+                    }
+
+                    Spacer()
                 }
-                .font(.title2)
-                .padding()
-                .frame(width: 200)
-                .background(Color.red)
-                .foregroundColor(.white)
-                .cornerRadius(12)
+                .padding(.horizontal, 30)
             }
         }
     }
 }
-
