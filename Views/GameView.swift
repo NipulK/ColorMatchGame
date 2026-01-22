@@ -2,7 +2,8 @@ import SwiftUI
 
 struct GameView: View {
     
-
+    @Environment(\.dismiss) var dismiss
+    
     @StateObject var vm = GameViewModel()
     var level: GameLevel
 
