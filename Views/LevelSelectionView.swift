@@ -28,6 +28,7 @@ struct LevelSelectionView: View {
                 selectedLevel = .hard
                 showRules = true
             }
+            
 
             // 🔹 HIDDEN NAVIGATION TO GAME
             NavigationLink(
