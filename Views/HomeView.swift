@@ -116,6 +116,7 @@ struct HomeView: View {
                 .padding(.horizontal, 28)
             }
         }
+        .buttonStyle(PressableButtonStyle())
     }
 }
 
