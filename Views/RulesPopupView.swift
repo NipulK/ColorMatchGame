@@ -23,6 +23,7 @@ struct RulesPopupView: View {
                 Text("• You can pause and resume the game")
             }
 
+            
             Spacer()
 
             Button("OK") {
