@@ -9,41 +9,36 @@ struct RulesPopupView: View {
 
         ZStack {
 
-            //  DARK BACKGROUND
-            Color.black.opacity(0.6)
+            // 🌫 DIMMED BACKGROUND
+            Color.black.opacity(0.65)
                 .ignoresSafeArea()
 
-            //  CARD
-            VStack(spacing: 20) {
+            // 🧊 CENTERED CARD (NOT FULL HEIGHT)
+            VStack(spacing: 22) {
 
-                //  TITLE
+                // 🎮 TITLE
                 Text("How to Play")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.system(size: 26, weight: .bold))
                     .foregroundColor(.white)
 
-                //  LEVEL INFO
+                // 🎯 LEVEL INFO
                 Text(levelTitle)
                     .font(.subheadline)
                     .foregroundColor(levelColor)
 
                 Divider()
-                    .background(Color.white.opacity(0.3))
+                    .background(Color.white.opacity(0.25))
 
-                //  RULES
-                VStack(alignment: .leading, spacing: 12) {
-
+                // 📜 RULES LIST
+                VStack(alignment: .leading, spacing: 14) {
                     ruleRow("Tap a card to reveal its color")
                     ruleRow("Match two cards with the same color")
                     ruleRow("Matched cards stay open")
                     ruleRow("Complete all matches to win")
                     ruleRow("Finish faster to get a better score")
-
                 }
-                .foregroundColor(.white.opacity(0.9))
 
-                Spacer(minLength: 10)
-
-                //  OK BUTTON
+                // ▶️ ACTION BUTTON
                 Button {
                     onConfirm()
                 } label: {
@@ -56,24 +51,26 @@ struct RulesPopupView: View {
                         .cornerRadius(14)
                 }
                 .buttonStyle(PressableButtonStyle())
+                .padding(.top, 8)
             }
             .padding(24)
             .background(
-                RoundedRectangle(cornerRadius: 24)
+                RoundedRectangle(cornerRadius: 26)
                     .fill(Color(hex: "#1C1F2A"))
             )
-            .padding(.horizontal, 30)
+            .padding(.horizontal, 28)
         }
     }
 
     // MARK: - Rule Row
     private func ruleRow(_ text: String) -> some View {
-        HStack(alignment: .top, spacing: 10) {
+        HStack(alignment: .top, spacing: 12) {
             Image(systemName: "checkmark.circle.fill")
                 .foregroundColor(.green)
 
             Text(text)
                 .font(.callout)
+                .foregroundColor(.white.opacity(0.9))
         }
     }
 
