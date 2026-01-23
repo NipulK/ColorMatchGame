@@ -14,21 +14,26 @@ struct LevelSelectionView: View {
                 .font(.largeTitle)
                 .bold()
 
+            // 🟢 EASY
             Button("Easy (3 × 3)") {
                 selectedLevel = .easy
                 showRules = true
             }
+            .buttonStyle(PressableButtonStyle())
 
+            // 🟡 MEDIUM
             Button("Medium (5 × 5)") {
                 selectedLevel = .medium
                 showRules = true
             }
+            .buttonStyle(PressableButtonStyle())
 
+            // 🔴 HARD
             Button("Hard (7 × 7)") {
                 selectedLevel = .hard
                 showRules = true
             }
-            
+            .buttonStyle(PressableButtonStyle(scale: 0.94))
 
             // 🔹 HIDDEN NAVIGATION TO GAME
             NavigationLink(
@@ -54,3 +59,23 @@ struct LevelSelectionView: View {
         }
     }
 }
+
+//
+// MARK: - Button Animation Style
+//
+struct PressableButtonStyle: ButtonStyle {
+
+    var scale: CGFloat = 0.96
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? scale : 1)
+            .opacity(configuration.isPressed ? 0.9 : 1)
+            .animation(
+                .spring(response: 0.25, dampingFraction: 0.8),
+                value: configuration.isPressed
+            )
+    }
+}
+
+//
