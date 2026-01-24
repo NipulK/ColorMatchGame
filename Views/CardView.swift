@@ -8,6 +8,7 @@ struct CardView: View {
 
         ZStack {
 
+            
             // BACK SIDE
             RoundedRectangle(cornerRadius: 10)
                 .fill(Color.blue)
