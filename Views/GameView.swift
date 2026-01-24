@@ -24,6 +24,7 @@ struct GameView: View {
                             .font(.title2)
                     }
 
+                    
                     //  Back to Home
                     Button{
                         dismiss()
