@@ -24,7 +24,7 @@ struct GameView: View {
 
             VStack(spacing: 16) {
 
-                // 🔝 TOP BAR
+                // TOP BAR
                 HStack {
 
                     Button {
