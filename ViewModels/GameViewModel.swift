@@ -14,7 +14,7 @@ class GameViewModel: ObservableObject {
     @Published var countdown: Int = 3
     @Published var showCountdown = false
 
-    // 🔵 NEW - for delayed finish panel
+    // NEW - for delayed finish panel
     @Published var showFinishPanel = false
 
     var timer: Timer?
@@ -35,7 +35,7 @@ class GameViewModel: ObservableObject {
         firstIndex = nil
         isWin = false
 
-        // 🔵 reset finish panel
+        //  reset finish panel
         showFinishPanel = false
 
         let total = level.size * level.size
@@ -68,7 +68,7 @@ class GameViewModel: ObservableObject {
         state = .notStarted
     }
 
-    // 🔵 START BUTTON PRESSED
+    //  START BUTTON PRESSED
     func startGame() {
 
         showCountdown = true
@@ -94,14 +94,14 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // 🔵 PAUSE BUTTON
+    // PAUSE BUTTON
     func pauseGame() {
 
         state = .paused
         timer?.invalidate()
     }
 
-    // 🔵 RESUME BUTTON
+    // RESUME BUTTON
     func resumeGame() {
 
         state = .running
@@ -153,7 +153,7 @@ class GameViewModel: ObservableObject {
                 timer?.invalidate()
                 state = .paused
 
-                // ✅ ASYNC AWAIT DELAY
+                //  ASYNC AWAIT DELAY
                 Task {
                     await showFinishWithDelay()
                 }
