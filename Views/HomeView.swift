@@ -3,7 +3,6 @@ import SwiftUI
 struct HomeView: View {
 
     @State private var goToDashboard = false
-    @State private var showScoreboardAlert = false
 
     var body: some View {
 
@@ -81,9 +80,7 @@ struct HomeView: View {
                     }
 
                     // 🏆 SCOREBOARD BUTTON (ALERT)
-                    Button {
-                        showScoreboardAlert = true
-                    } label: {
+                    NavigationLink(destination: ScoreboardView()) {
                         Text("SCOREBOARD")
                             .font(.subheadline)
                             .foregroundColor(.white.opacity(0.9))
@@ -91,11 +88,6 @@ struct HomeView: View {
                             .padding()
                             .background(Color.white.opacity(0.12))
                             .cornerRadius(16)
-                    }
-                    .alert("Scoreboard", isPresented: $showScoreboardAlert) {
-                        Button("OK", role: .cancel) { }
-                    } message: {
-                        Text("Scoreboard feature will be added soon.")
                     }
 
                     // 🚪 EXIT BUTTON

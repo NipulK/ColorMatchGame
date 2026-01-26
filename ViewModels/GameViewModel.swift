@@ -1,44 +1,48 @@
 import SwiftUI
 import Combine
 
-
-
 class GameViewModel: ObservableObject {
 
+    // MARK: - Published Properties
     @Published var cards: [CardModel] = []
     @Published var score: Int = 0
     @Published var isWin = false
-    
     @Published var time: Double = 0
-    
     @Published var state: GameState = .notStarted
-    
     @Published var countdown: Int = 3
     @Published var showCountdown = false
-
-    // NEW - for delayed finish panel
     @Published var showFinishPanel = false
 
-    var timer: Timer?
+    // MARK: - New (Scoreboard)
+    @Published var playerName: String = "Player"
 
+    private(set) var currentLevel: GameLevel?
+
+    // MARK: - Timer
+    var timer: Timer?
     private var firstIndex: Int? = nil
-    
+    private var didSaveResult = false   // prevents duplicate saves
+
+    // MARK: - Game State
     enum GameState {
         case notStarted
         case running
         case paused
     }
 
-    // Prepare cards BUT do not start timer
+    // MARK: - Start Game (Prepare Cards)
     func start(level: GameLevel) {
+
+        currentLevel = level
+        didSaveResult = false
 
         cards.removeAll()
         score = 0
         firstIndex = nil
         isWin = false
-
-        //  reset finish panel
+        time = 0
         showFinishPanel = false
+        state = .notStarted
 
         let total = level.size * level.size
         let pairCount = total / 2
@@ -46,7 +50,6 @@ class GameViewModel: ObservableObject {
         var colors: [Color] = []
 
         for _ in 0..<pairCount {
-
             let randomColor = Color(
                 red: Double.random(in: 0...1),
                 green: Double.random(in: 0...1),
@@ -62,33 +65,24 @@ class GameViewModel: ObservableObject {
         }
 
         colors.shuffle()
-
         cards = colors.map { CardModel(color: $0) }
-
-        // Important: game not started yet
-        time = 0
-        state = .notStarted
     }
 
-    //  START BUTTON PRESSED
+    // MARK: - Start Button
     func startGame() {
 
         showCountdown = true
         countdown = 3
 
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-
             self.countdown -= 1
 
             if self.countdown == 0 {
                 timer.invalidate()
-
                 self.showCountdown = false
                 self.state = .running
 
-                // Start real game timer
                 self.timer?.invalidate()
-
                 self.timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
                     self.time += 0.01
                 }
@@ -96,33 +90,24 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // PAUSE BUTTON
+    // MARK: - Pause / Resume
     func pauseGame() {
-
         state = .paused
         timer?.invalidate()
     }
 
-    // RESUME BUTTON
     func resumeGame() {
-
         state = .running
-
         timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
             self.time += 0.01
         }
     }
 
-    // when user tap
+    // MARK: - Card Selection
     func selectCard(index: Int) {
 
-        if state != .running {
-            return
-        }
-
-        if cards[index].isMatched || cards[index].isFaceUp {
-            return
-        }
+        guard state == .running else { return }
+        guard !cards[index].isMatched && !cards[index].isFaceUp else { return }
 
         cards[index].isFaceUp = true
 
@@ -134,13 +119,13 @@ class GameViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Match Logic
     private func checkMatch(first: Int, second: Int) {
 
         if cards[first].color == cards[second].color {
 
             cards[first].isMatched = true
             cards[second].isMatched = true
-
             score += 1
 
             let allMatched = cards.allSatisfy {
@@ -148,33 +133,46 @@ class GameViewModel: ObservableObject {
             }
 
             if allMatched {
-
-                isWin = true
-
-                // stop timer immediately
-                timer?.invalidate()
-                state = .paused
-
-                //  ASYNC AWAIT DELAY
-                Task {
-                    await showFinishWithDelay()
-                }
+                handleGameWin()
             }
 
         } else {
-
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-
                 self.cards[first].isFaceUp = false
                 self.cards[second].isFaceUp = false
             }
         }
     }
 
-    //  ASYNC DELAY FUNCTION
+    // MARK: - Game Win Handler
+    private func handleGameWin() {
+
+        guard !didSaveResult, let level = currentLevel else { return }
+
+        didSaveResult = true
+        isWin = true
+
+        timer?.invalidate()
+        state = .paused
+
+        let result = GameResult(
+            playerName: playerName,
+            score: score,
+            time: time,
+            level: level
+        )
+
+        ScoreboardManager.shared.save(result)
+
+        Task {
+            await showFinishWithDelay()
+        }
+    }
+
+    // MARK: - Finish Panel Delay
     @MainActor
     func showFinishWithDelay() async {
-        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
         showFinishPanel = true
     }
 }
