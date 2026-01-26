@@ -1,4 +1,4 @@
-enum GameLevel  {
+enum GameLevel: String, Codable {
     case easy
     case medium
     case hard
@@ -12,6 +12,5 @@ enum GameLevel  {
         case .hard:
             return 7
         }
-   
     }
 }
