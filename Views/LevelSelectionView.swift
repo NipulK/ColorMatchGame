@@ -2,6 +2,8 @@ import SwiftUI
 
 struct LevelSelectionView: View {
 
+    let playerName: String   // ✅ NEW
+
     @State private var selectedLevel: GameLevel = .easy
     @State private var showRules = false
     @State private var goToGame = false
@@ -69,7 +71,7 @@ struct LevelSelectionView: View {
             .padding(.horizontal, 28)
         }
 
-        // RULES POPUP
+        // 📜 RULES POPUP
         .sheet(isPresented: $showRules) {
             RulesPopupView(
                 level: selectedLevel,
@@ -82,10 +84,13 @@ struct LevelSelectionView: View {
             )
         }
 
-        // HIDDEN NAVIGATION
+        // 🔀 HIDDEN NAVIGATION
         .background(
             NavigationLink(
-                destination: GameView(level: selectedLevel),
+                destination: GameView(
+                    level: selectedLevel,
+                    playerName: playerName   // ✅ PASS NAME
+                ),
                 isActive: $goToGame
             ) {
                 EmptyView()

@@ -4,13 +4,15 @@ struct GameView: View {
 
     @Environment(\.dismiss) var dismiss
     @StateObject var vm = GameViewModel()
-    var level: GameLevel
+
+    let level: GameLevel
+    let playerName: String   // ✅ NEW
 
     var body: some View {
 
         ZStack {
 
-            // 🌌 BACKGROUND (match Home UI)
+            // 🌌 BACKGROUND
             LinearGradient(
                 colors: [
                     Color(hex: "#0F2027"),
@@ -35,14 +37,12 @@ struct GameView: View {
                             .foregroundColor(.white)
                     }
 
-   
                     Spacer()
-
                 }
                 .padding(.horizontal)
                 .padding(.top, 10)
 
-                // 🧠 HUD (Score & Time)
+                // 🧠 HUD
                 VStack(spacing: 6) {
                     Text("Score \(vm.score)")
                         .font(.headline)
@@ -54,7 +54,7 @@ struct GameView: View {
                 }
                 .padding(.top, 40)
 
-                // ▶️ START / PAUSE / RESUME
+                // ▶️ CONTROLS
                 if vm.state == .notStarted {
                     primaryButton("START GAME", action: vm.startGame)
                 }
@@ -67,10 +67,9 @@ struct GameView: View {
                     secondaryButton("RESUME", color: .blue, action: vm.resumeGame)
                 }
 
-                // ⬇️ PUSH GRID TO CENTER
                 Spacer(minLength: 20)
 
-                // 🟦 GAME GRID (CENTERED)
+                // 🟦 GRID
                 let columns = Array(
                     repeating: GridItem(.flexible()),
                     count: level.size
@@ -91,7 +90,6 @@ struct GameView: View {
                 .blur(radius: (vm.state != .running || vm.showCountdown || vm.isWin) ? 8 : 0)
                 .disabled(vm.state != .running || vm.showCountdown || vm.isWin)
 
-                // ⬆️ KEEP GRID CENTERED
                 Spacer()
             }
 
@@ -107,11 +105,12 @@ struct GameView: View {
         }
         .navigationBarBackButtonHidden(true)
         .onAppear {
+            vm.playerName = playerName   // ✅ SET PLAYER NAME
             vm.start(level: level)
         }
     }
 
-    // MARK: - UI Components
+    // MARK: - Buttons
 
     private func primaryButton(_ title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {

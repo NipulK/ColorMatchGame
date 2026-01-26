@@ -3,6 +3,7 @@ import SwiftUI
 struct HomeView: View {
 
     @State private var goToDashboard = false
+    @State private var playerName: String = ""
 
     var body: some View {
 
@@ -10,7 +11,6 @@ struct HomeView: View {
 
             ZStack {
 
-                // 🌌 CLEAN DARK BACKGROUND
                 LinearGradient(
                     colors: [
                         Color(hex: "#0F2027"),
@@ -60,9 +60,19 @@ struct HomeView: View {
 
                     Spacer()
 
+                    // 👤 PLAYER NAME INPUT
+                    TextField("Enter your name", text: $playerName)
+                        .padding()
+                        .background(Color.white.opacity(0.15))
+                        .foregroundColor(.white)
+                        .cornerRadius(14)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                        .textInputAutocapitalization(.words)
+
                     // ▶️ PLAY BUTTON
                     NavigationLink(
-                        destination: LevelSelectionView(),
+                        destination: LevelSelectionView(playerName: playerName.isEmpty ? "Player" : playerName),
                         isActive: $goToDashboard
                     ) {
                         Button {
@@ -77,9 +87,10 @@ struct HomeView: View {
                                 .cornerRadius(16)
                                 .shadow(color: .black.opacity(0.25), radius: 8)
                         }
+                        .disabled(playerName.trimmingCharacters(in: .whitespaces).isEmpty)
                     }
 
-                    // 🏆 SCOREBOARD BUTTON (ALERT)
+                    // 🏆 SCOREBOARD
                     NavigationLink(destination: ScoreboardView()) {
                         Text("SCOREBOARD")
                             .font(.subheadline)
@@ -90,9 +101,9 @@ struct HomeView: View {
                             .cornerRadius(16)
                     }
 
-                    // 🚪 EXIT BUTTON
+                    // 🚪 EXIT
                     Button {
-                        exit(0)   // academic/demo purpose
+                        exit(0)
                     } label: {
                         Text("EXIT")
                             .font(.subheadline)
@@ -109,7 +120,5 @@ struct HomeView: View {
             }
         }
         .buttonStyle(PressableButtonStyle())
-   
     }
 }
-
