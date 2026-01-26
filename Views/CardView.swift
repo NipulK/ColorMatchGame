@@ -6,6 +6,7 @@ struct CardView: View {
 
     var body: some View {
 
+        
         ZStack {
 
             RoundedRectangle(cornerRadius: 14)

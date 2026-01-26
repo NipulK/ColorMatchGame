@@ -24,7 +24,7 @@ struct GameView: View {
 
             VStack(spacing: 16) {
 
-                // TOP BAR
+                // 🔝 TOP BAR
                 HStack {
 
                     Button {
@@ -35,20 +35,14 @@ struct GameView: View {
                             .foregroundColor(.white)
                     }
 
+   
                     Spacer()
 
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "house.fill")
-                            .font(.title3)
-                            .foregroundColor(.white)
-                    }
                 }
                 .padding(.horizontal)
                 .padding(.top, 10)
 
-                // 🧠 HUD
+                // 🧠 HUD (Score & Time)
                 VStack(spacing: 6) {
                     Text("Score \(vm.score)")
                         .font(.headline)
@@ -58,6 +52,7 @@ struct GameView: View {
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.7))
                 }
+                .padding(.top, 40)
 
                 // ▶️ START / PAUSE / RESUME
                 if vm.state == .notStarted {
@@ -72,8 +67,14 @@ struct GameView: View {
                     secondaryButton("RESUME", color: .blue, action: vm.resumeGame)
                 }
 
-                // 🟦 GAME GRID
-                let columns = Array(repeating: GridItem(.flexible()), count: level.size)
+                // ⬇️ PUSH GRID TO CENTER
+                Spacer(minLength: 20)
+
+                // 🟦 GAME GRID (CENTERED)
+                let columns = Array(
+                    repeating: GridItem(.flexible()),
+                    count: level.size
+                )
 
                 LazyVGrid(columns: columns, spacing: 12) {
                     ForEach(vm.cards.indices, id: \.self) { i in
@@ -90,6 +91,7 @@ struct GameView: View {
                 .blur(radius: (vm.state != .running || vm.showCountdown || vm.isWin) ? 8 : 0)
                 .disabled(vm.state != .running || vm.showCountdown || vm.isWin)
 
+                // ⬆️ KEEP GRID CENTERED
                 Spacer()
             }
 
