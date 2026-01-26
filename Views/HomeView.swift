@@ -3,7 +3,10 @@ import SwiftUI
 struct HomeView: View {
 
     @State private var goToDashboard = false
+
+    // Player name states
     @State private var playerName: String = ""
+    @State private var showNamePopup = false
 
     var body: some View {
 
@@ -60,34 +63,18 @@ struct HomeView: View {
 
                     Spacer()
 
-                    // 👤 PLAYER NAME INPUT
-                    TextField("Enter your name", text: $playerName)
-                        .padding()
-                        .background(Color.white.opacity(0.15))
-                        .foregroundColor(.white)
-                        .cornerRadius(14)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                        .textInputAutocapitalization(.words)
-
                     // ▶️ PLAY BUTTON
-                    NavigationLink(
-                        destination: LevelSelectionView(playerName: playerName.isEmpty ? "Player" : playerName),
-                        isActive: $goToDashboard
-                    ) {
-                        Button {
-                            goToDashboard = true
-                        } label: {
-                            Text("PLAY")
-                                .font(.headline)
-                                .foregroundColor(.black)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.white)
-                                .cornerRadius(16)
-                                .shadow(color: .black.opacity(0.25), radius: 8)
-                        }
-                        .disabled(playerName.trimmingCharacters(in: .whitespaces).isEmpty)
+                    Button {
+                        showNamePopup = true
+                    } label: {
+                        Text("PLAY")
+                            .font(.headline)
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(16)
+                            .shadow(color: .black.opacity(0.25), radius: 8)
                     }
 
                     // 🏆 SCOREBOARD
@@ -117,8 +104,37 @@ struct HomeView: View {
                     Spacer(minLength: 30)
                 }
                 .padding(.horizontal, 28)
+
+                // 🔀 HIDDEN NAVIGATION
+                NavigationLink(
+                    destination: LevelSelectionView(
+                        playerName: playerName.trimmingCharacters(in: .whitespaces).isEmpty
+                        ? "Player"
+                        : playerName
+                    ),
+                    isActive: $goToDashboard
+                ) {
+                    EmptyView()
+                }
             }
         }
         .buttonStyle(PressableButtonStyle())
+
+        // 👤 NAME POPUP
+        .alert("Enter your name", isPresented: $showNamePopup) {
+
+            TextField("Your name", text: $playerName)
+
+            Button("Continue") {
+                if !playerName.trimmingCharacters(in: .whitespaces).isEmpty {
+                    goToDashboard = true
+                }
+            }
+
+            Button("Cancel", role: .cancel) { }
+
+        } message: {
+            Text("This name will appear on the scoreboard.")
+        }
     }
 }
