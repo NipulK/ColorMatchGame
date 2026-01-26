@@ -1,4 +1,4 @@
-enum GameLevel {
+enum GameLevel  {
     case easy
     case medium
     case hard
