@@ -120,21 +120,19 @@ struct HomeView: View {
         }
         .buttonStyle(PressableButtonStyle())
 
-        // 👤 NAME POPUP
-        .alert("Enter your name", isPresented: $showNamePopup) {
-
-            TextField("Your name", text: $playerName)
-
-            Button("Continue") {
-                if !playerName.trimmingCharacters(in: .whitespaces).isEmpty {
+        // 👤 CUSTOM NAME POPUP
+        if showNamePopup {
+            NameEntryPopupView(
+                playerName: $playerName,
+                onContinue: {
+                    showNamePopup = false
                     goToDashboard = true
+                },
+                onCancel: {
+                    showNamePopup = false
                 }
-            }
-
-            Button("Cancel", role: .cancel) { }
-
-        } message: {
-            Text("This name will appear on the scoreboard.")
+            )
+            .animation(.spring(response: 0.35, dampingFraction: 0.85), value: showNamePopup)
         }
     }
 }

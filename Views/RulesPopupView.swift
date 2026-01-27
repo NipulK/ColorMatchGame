@@ -74,6 +74,7 @@ struct RulesPopupView: View {
         }
     }
 
+    
     // MARK: - Level Title
     private var levelTitle: String {
         switch level {
