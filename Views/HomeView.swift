@@ -76,6 +76,20 @@ struct HomeView: View {
                             .cornerRadius(16)
                             .shadow(color: .black.opacity(0.25), radius: 8)
                     }
+                    
+                    // Navigate to the popup name entering UI
+                    .sheet(isPresented: $showNamePopup) {
+                        NameEntryPopupView(
+                            playerName: $playerName,
+                            onContinue: {
+                                showNamePopup = false
+                                goToDashboard = true
+                            },
+                            onCancel: {
+                                showNamePopup = false
+                            }
+                        )
+                    }
 
                     // 🏆 SCOREBOARD
                     NavigationLink(destination: ScoreboardView()) {
@@ -120,20 +134,5 @@ struct HomeView: View {
         }
         .buttonStyle(PressableButtonStyle())
 
-        // 👤 CUSTOM NAME POPUP
-        if showNamePopup {
-            NameEntryPopupView(
-                playerName: $playerName,
-                onContinue: {
-                    showNamePopup = false
-                    goToDashboard = true
-                },
-                onCancel: {
-                    showNamePopup = false
-                }
-                
-            )
-            .animation(.spring(response: 0.35, dampingFraction: 0.85), value: showNamePopup)
-        }
     }
 }

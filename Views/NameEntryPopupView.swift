@@ -6,22 +6,20 @@ struct NameEntryPopupView: View {
     let onContinue: () -> Void
     let onCancel: () -> Void
 
-    // Accent color (can be changed later)
     private let accentColor: Color = .orange
 
     var body: some View {
 
-        
         ZStack {
 
-            // 🌫 DIMMED BACKGROUND
+            // 🌫 DIMMED BACKGROUND (same as Rules)
             Color.black.opacity(0.7)
                 .ignoresSafeArea()
 
             // 🧊 POPUP CARD
             VStack(spacing: 22) {
 
-                // 🔶 HEADER (Same style as RulesPopupView)
+                // 🔶 HEADER (IDENTICAL STRUCTURE)
                 VStack(spacing: 10) {
                     ZStack {
                         Circle()
@@ -40,14 +38,22 @@ struct NameEntryPopupView: View {
                     Text("This name will appear on the scoreboard")
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.7))
-                        .multilineTextAlignment(.center)
                 }
 
                 Divider()
                     .background(Color.white.opacity(0.2))
 
-                // 👤 NAME INPUT
-                VStack(spacing: 10) {
+                // 👤 CONTENT BLOCK (REPLACES RULE LIST)
+                VStack(alignment: .leading, spacing: 14) {
+
+                    HStack(spacing: 12) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .foregroundColor(accentColor)
+
+                        Text("Enter a name to track your score")
+                            .font(.callout)
+                            .foregroundColor(.white.opacity(0.9))
+                    }
 
                     TextField("Player name", text: $playerName)
                         .padding()
@@ -60,11 +66,12 @@ struct NameEntryPopupView: View {
                     if playerName.trimmingCharacters(in: .whitespaces).isEmpty {
                         Text("Please enter your name to continue")
                             .font(.caption)
-                            .foregroundColor(.red.opacity(0.8))
+                            .foregroundColor(.red.opacity(0.85))
+                            .padding(.leading, 34) // aligns with text like rules
                     }
                 }
 
-                // ▶️ CONTINUE BUTTON
+                // ▶️ CONTINUE BUTTON (MATCHES RULES BUTTON)
                 Button {
                     if !playerName.trimmingCharacters(in: .whitespaces).isEmpty {
                         onContinue()
@@ -79,9 +86,9 @@ struct NameEntryPopupView: View {
                         .cornerRadius(14)
                 }
                 .buttonStyle(PressableButtonStyle())
-                .padding(.top, 6)
+                .padding(.top, 8)
 
-                // ❌ CANCEL
+                // ❌ CANCEL (same position as rules text bottom)
                 Button {
                     onCancel()
                 } label: {
