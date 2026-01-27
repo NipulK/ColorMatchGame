@@ -131,6 +131,7 @@ struct HomeView: View {
                 onCancel: {
                     showNamePopup = false
                 }
+                
             )
             .animation(.spring(response: 0.35, dampingFraction: 0.85), value: showNamePopup)
         }

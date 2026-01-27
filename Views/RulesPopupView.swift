@@ -10,26 +10,37 @@ struct RulesPopupView: View {
         ZStack {
 
             // 🌫 DIMMED BACKGROUND
-            Color.black.opacity(0.65)
+            Color.black.opacity(0.7)
                 .ignoresSafeArea()
 
-            // 🧊 CENTERED CARD (NOT FULL HEIGHT)
+            // 🧊 POPUP CARD
             VStack(spacing: 22) {
 
-                // 🎮 TITLE
-                Text("How to Play")
-                    .font(.system(size: 26, weight: .bold))
-                    .foregroundColor(.white)
+                // 🔶 HEADER
+                VStack(spacing: 10) {
+                    ZStack {
+                        Circle()
+                            .fill(levelColor.opacity(0.25))
+                            .frame(width: 64, height: 64)
 
-                // 🎯 LEVEL INFO
-                Text(levelTitle)
-                    .font(.subheadline)
-                    .foregroundColor(levelColor)
+                        Image(systemName: "gamecontroller.fill")
+                            .font(.system(size: 28))
+                            .foregroundColor(levelColor)
+                    }
+
+                    Text("How to Play")
+                        .font(.system(size: 26, weight: .bold))
+                        .foregroundColor(.white)
+
+                    Text(levelTitle)
+                        .font(.subheadline)
+                        .foregroundColor(levelColor)
+                }
 
                 Divider()
-                    .background(Color.white.opacity(0.25))
+                    .background(Color.white.opacity(0.2))
 
-                // 📜 RULES LIST
+                // 📜 RULES
                 VStack(alignment: .leading, spacing: 14) {
                     ruleRow("Tap a card to reveal its color")
                     ruleRow("Match two cards with the same color")
@@ -38,16 +49,16 @@ struct RulesPopupView: View {
                     ruleRow("Finish faster to get a better score")
                 }
 
-                // ▶️ ACTION BUTTON
+                // ▶️ START BUTTON
                 Button {
                     onConfirm()
                 } label: {
-                    Text("OK, START GAME")
+                    Text("START GAME")
                         .font(.headline)
                         .foregroundColor(.black)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.white)
+                        .background(levelColor)
                         .cornerRadius(14)
                 }
                 .buttonStyle(PressableButtonStyle())
@@ -57,16 +68,19 @@ struct RulesPopupView: View {
             .background(
                 RoundedRectangle(cornerRadius: 26)
                     .fill(Color(hex: "#1C1F2A"))
+                    .shadow(color: levelColor.opacity(0.35), radius: 20)
             )
             .padding(.horizontal, 28)
         }
+        .transition(.scale.combined(with: .opacity))
     }
 
+    
     // MARK: - Rule Row
     private func ruleRow(_ text: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(.green)
+            Image(systemName: "checkmark.seal.fill")
+                .foregroundColor(levelColor)
 
             Text(text)
                 .font(.callout)
@@ -74,20 +88,19 @@ struct RulesPopupView: View {
         }
     }
 
-    
     // MARK: - Level Title
     private var levelTitle: String {
         switch level {
         case .easy:
-            return "Easy Level • 3 × 3 Grid"
+            return "Easy • 3 × 3 Grid"
         case .medium:
-            return "Medium Level • 5 × 5 Grid"
+            return "Medium • 5 × 5 Grid"
         case .hard:
-            return "Hard Level • 7 × 7 Grid"
+            return "Hard • 7 × 7 Grid"
         }
     }
 
-    // MARK: - Level Color
+    // MARK: - Level Accent Color
     private var levelColor: Color {
         switch level {
         case .easy:

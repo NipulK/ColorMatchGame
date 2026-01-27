@@ -10,6 +10,7 @@ struct GameView: View {
 
     var body: some View {
 
+        
         ZStack {
 
             // 🌌 BACKGROUND

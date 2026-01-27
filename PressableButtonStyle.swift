@@ -12,6 +12,6 @@ struct PressableButtonStyle: ButtonStyle {
             .animation(
                 .spring(response: 0.25, dampingFraction: 0.8),
                 value: configuration.isPressed
-            )
+        )
     }
 }
