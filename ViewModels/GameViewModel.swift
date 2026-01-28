@@ -1,9 +1,9 @@
 import SwiftUI
 import Combine
+import UIKit
 
 class GameViewModel: ObservableObject {
 
-    // MARK: - Published Properties
     @Published var cards: [CardModel] = []
     @Published var score: Int = 0
     @Published var isWin = false
@@ -13,24 +13,20 @@ class GameViewModel: ObservableObject {
     @Published var showCountdown = false
     @Published var showFinishPanel = false
 
-    // MARK: - New (Scoreboard)
     @Published var playerName: String = "Player"
 
     private(set) var currentLevel: GameLevel?
 
-    // MARK: - Timer
     var timer: Timer?
     private var firstIndex: Int? = nil
-    private var didSaveResult = false   // prevents duplicate saves
+    private var didSaveResult = false
 
-    // MARK: - Game State
     enum GameState {
         case notStarted
         case running
         case paused
     }
 
-    // MARK: - Start Game (Prepare Cards)
     func start(level: GameLevel) {
 
         currentLevel = level
@@ -55,7 +51,6 @@ class GameViewModel: ObservableObject {
                 green: Double.random(in: 0...1),
                 blue: Double.random(in: 0...1)
             )
-
             colors.append(randomColor)
             colors.append(randomColor)
         }
@@ -68,7 +63,6 @@ class GameViewModel: ObservableObject {
         cards = colors.map { CardModel(color: $0) }
     }
 
-    // MARK: - Start Button
     func startGame() {
 
         showCountdown = true
@@ -90,7 +84,6 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Pause / Resume
     func pauseGame() {
         state = .paused
         timer?.invalidate()
@@ -103,7 +96,6 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Card Selection
     func selectCard(index: Int) {
 
         guard state == .running else { return }
@@ -119,7 +111,6 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Match Logic
     private func checkMatch(first: Int, second: Int) {
 
         if cards[first].color == cards[second].color {
@@ -127,6 +118,9 @@ class GameViewModel: ObservableObject {
             cards[first].isMatched = true
             cards[second].isMatched = true
             score += 1
+
+            // ✅ Light match haptic
+            playImpact(.light)
 
             let allMatched = cards.allSatisfy {
                 $0.isMatched || $0.color == .gray
@@ -144,13 +138,15 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Game Win Handler
     private func handleGameWin() {
 
         guard !didSaveResult, let level = currentLevel else { return }
 
         didSaveResult = true
         isWin = true
+
+        // 🏆 Strong success haptic
+        playSuccess()
 
         timer?.invalidate()
         state = .paused
@@ -169,11 +165,22 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    
-    // MARK: - Finish Panel Delay
     @MainActor
     func showFinishWithDelay() async {
         try? await Task.sleep(nanoseconds: 1_000_000_000)
         showFinishPanel = true
+    }
+
+    // MARK: - Haptics
+    private func playImpact(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
+        let generator = UIImpactFeedbackGenerator(style: style)
+        generator.prepare()
+        generator.impactOccurred()
+    }
+
+    private func playSuccess() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.prepare()
+        generator.notificationOccurred(.success)
     }
 }
