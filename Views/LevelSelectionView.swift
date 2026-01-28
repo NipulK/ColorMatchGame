@@ -2,7 +2,7 @@ import SwiftUI
 
 struct LevelSelectionView: View {
 
-    let playerName: String   // ✅ NEW
+    let playerName: String
 
     @State private var selectedLevel: GameLevel = .easy
     @State private var showRules = false
@@ -12,31 +12,22 @@ struct LevelSelectionView: View {
 
         ZStack {
 
-            
-            //  SAME BACKGROUND AS HOME
-            LinearGradient(
-                colors: [
-                    Color(hex: "#0F2027"),
-                    Color(hex: "#203A43"),
-                    Color(hex: "#2C5364")
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            //  LIGHT BACKGROUND
+            Color.appBackground
+                .ignoresSafeArea()
 
             VStack(spacing: 24) {
 
                 Spacer(minLength: 40)
 
-                // 🎮 TITLE
+                //  TITLE
                 Text("Choose Level")
-                    .font(.system(size: 34, weight: .bold))
-                    .foregroundColor(.white)
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundColor(.primaryText)
 
                 Text("Select your difficulty")
                     .font(.callout)
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(.secondaryText)
 
                 Spacer(minLength: 20)
 
@@ -72,7 +63,7 @@ struct LevelSelectionView: View {
             .padding(.horizontal, 28)
         }
 
-        // 📜 RULES POPUP
+        // 📜 RULES POPUP (LIGHT UI)
         .sheet(isPresented: $showRules) {
             RulesPopupView(
                 level: selectedLevel,
@@ -85,12 +76,12 @@ struct LevelSelectionView: View {
             )
         }
 
-        // 🔀 HIDDEN NAVIGATION
+        // 🔀 NAVIGATION TO GAME
         .background(
             NavigationLink(
                 destination: GameView(
                     level: selectedLevel,
-                    playerName: playerName   // ✅ PASS NAME
+                    playerName: playerName
                 ),
                 isActive: $goToGame
             ) {
@@ -99,7 +90,7 @@ struct LevelSelectionView: View {
         )
     }
 
-    // MARK: - Level Card UI
+    // MARK: - Level Card (Light Style)
     private func levelCard(
         title: String,
         subtitle: String,
@@ -116,32 +107,33 @@ struct LevelSelectionView: View {
             HStack(spacing: 16) {
 
                 Circle()
-                    .fill(color.opacity(0.25))
-                    .frame(width: 50, height: 50)
+                    .fill(color.opacity(0.15))
+                    .frame(width: 54, height: 54)
                     .overlay(
                         Image(systemName: icon)
                             .foregroundColor(color)
                             .font(.title2)
                     )
 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 6) {
                     Text(title)
                         .font(.headline)
-                        .foregroundColor(.white)
+                        .foregroundColor(.primaryText)
 
                     Text(subtitle)
                         .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundColor(.secondaryText)
                 }
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .foregroundColor(.white.opacity(0.4))
+                    .foregroundColor(.secondaryText.opacity(0.6))
             }
             .padding()
-            .background(Color.white.opacity(0.08))
-            .cornerRadius(16)
+            .background(Color.cardBackground)
+            .cornerRadius(18)
+            .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
         }
         .buttonStyle(PressableButtonStyle())
     }
