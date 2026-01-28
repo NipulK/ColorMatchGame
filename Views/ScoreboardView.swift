@@ -2,58 +2,88 @@ import SwiftUI
 
 struct ScoreboardView: View {
 
-    @StateObject private var vm = ScoreboardViewModel()
+    @Environment(\.dismiss) var dismiss
+    @State private var results: [GameResult] = []
 
     var body: some View {
 
         ZStack {
 
-            LinearGradient(
-                colors: [
-                    Color(hex: "#0F2027"),
-                    Color(hex: "#203A43"),
-                    Color(hex: "#2C5364")
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            // 🌤 LIGHT BACKGROUND
+            Color.appBackground
+                .ignoresSafeArea()
 
             VStack(spacing: 16) {
 
-                Text("🏆 Scoreboard")
-                    .font(.largeTitle)
-                    .bold()
-                    .foregroundColor(.white)
-                    .padding(.top)
+                // 🔝 HEADER
+                HStack {
 
-                // LEVEL FILTER
-                Picker("Level", selection: $vm.selectedLevel) {
-                    Text("All").tag(GameLevel?.none)
-                    Text("Easy").tag(GameLevel?.some(.easy))
-                    Text("Medium").tag(GameLevel?.some(.medium))
-                    Text("Hard").tag(GameLevel?.some(.hard))
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal)
-
-                // LEADERBOARD
-                ScrollView {
-                    VStack(spacing: 12) {
-                        ForEach(vm.topScores) { result in
-                            HistoryRowView(result: result)
-                        }
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.title3)
+                            .foregroundColor(.primaryText)
                     }
-                    .padding()
+
+                    Spacer()
+
+                    Text("Scoreboard")
+                        .font(.title2.bold())
+                        .foregroundColor(.primaryText)
+
+                    Spacer()
+
+                    Color.clear.frame(width: 24)
+                }
+                .padding(.horizontal)
+                .padding(.top, 12)
+
+                // 🏆 CONTENT
+                if results.isEmpty {
+
+                    Spacer()
+
+                    VStack(spacing: 12) {
+                        Image(systemName: "trophy.fill")
+                            .font(.system(size: 48))
+                            .foregroundColor(.accent)
+
+                        Text("No scores yet")
+                            .font(.headline)
+                            .foregroundColor(.primaryText)
+
+                        Text("Play a game to see your results here.")
+                            .font(.subheadline)
+                            .foregroundColor(.secondaryText)
+                    }
+
+                    Spacer()
+
+                } else {
+
+                    ScrollView {
+                        VStack(spacing: 14) {
+                            ForEach(Array(results.enumerated()), id: \.element.id) { index, result in
+                                HistoryRowView(
+                                    rank: index + 1,
+                                    result: result
+                                )
+                            }
+                        }
+                        .padding()
+                    }
                 }
             }
         }
-        
-        .navigationTitle("")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .onAppear {
-            vm.load()
+            loadScores()
         }
     }
-    
+
+    // MARK: - Load Scores
+    private func loadScores() {
+        results = ScoreboardManager.shared.topScores(limit: 20)
+    }
 }
