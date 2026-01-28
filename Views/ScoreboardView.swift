@@ -48,6 +48,7 @@ struct ScoreboardView: View {
                 }
             }
         }
+        
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

@@ -4,11 +4,14 @@ struct GameView: View {
 
     @Environment(\.dismiss) var dismiss
     @StateObject var vm = GameViewModel()
+    @State private var showConfetti = false //show game win animation
 
     let level: GameLevel
     let playerName: String
 
     var body: some View {
+        
+        
 
         ZStack {
 
@@ -88,6 +91,12 @@ struct GameView: View {
 
                 Spacer()
             }
+            
+            //  CONFETTI
+            if showConfetti {
+                ConfettiView()
+                    .transition(.opacity)
+            }
 
             // 🏆 FINISH OVERLAY
             if vm.showFinishPanel {
@@ -103,6 +112,16 @@ struct GameView: View {
         .onAppear {
             vm.playerName = playerName
             vm.start(level: level)
+        }
+        .onChange(of: vm.isWin) { win in
+            if win {
+                showConfetti = true
+
+                // Auto-hide confetti after 3 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    showConfetti = false
+                }
+            }
         }
     }
 
