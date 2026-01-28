@@ -18,6 +18,7 @@ struct HistoryRowView: View {
 
             Spacer()
 
+            
             VStack(alignment: .trailing, spacing: 4) {
                 Text("Score \(result.score)")
                     .foregroundColor(.white)

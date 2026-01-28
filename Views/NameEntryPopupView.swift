@@ -12,7 +12,7 @@ struct NameEntryPopupView: View {
 
         ZStack {
 
-            // 🌫 DIMMED BACKGROUND (same as Rules)
+            //  DIMMED BACKGROUND (same as Rules)
             Color.black.opacity(0.7)
                 .ignoresSafeArea()
 

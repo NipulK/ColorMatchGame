@@ -13,7 +13,7 @@ struct GameView: View {
         
         ZStack {
 
-            // 🌌 BACKGROUND
+            //  BACKGROUND
             LinearGradient(
                 colors: [
                     Color(hex: "#0F2027"),

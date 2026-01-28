@@ -13,7 +13,7 @@ struct LevelSelectionView: View {
         ZStack {
 
             
-            // 🌌 SAME BACKGROUND AS HOME
+            //  SAME BACKGROUND AS HOME
             LinearGradient(
                 colors: [
                     Color(hex: "#0F2027"),

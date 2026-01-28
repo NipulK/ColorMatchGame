@@ -54,4 +54,5 @@ struct ScoreboardView: View {
             vm.load()
         }
     }
+    
 }

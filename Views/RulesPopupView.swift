@@ -75,7 +75,7 @@ struct RulesPopupView: View {
         .transition(.scale.combined(with: .opacity))
     }
 
-    
+
     // MARK: - Rule Row
     private func ruleRow(_ text: String) -> some View {
         HStack(alignment: .top, spacing: 12) {

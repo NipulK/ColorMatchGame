@@ -6,6 +6,7 @@ struct ColorMatchGameApp: App {
         WindowGroup {
             ContentView()
             
+            
         }
     }
 }

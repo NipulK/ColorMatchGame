@@ -91,7 +91,7 @@ struct HomeView: View {
                         )
                     }
 
-                    // 🏆 SCOREBOARD
+                    //  SCOREBOARD
                     NavigationLink(destination: ScoreboardView()) {
                         Text("SCOREBOARD")
                             .font(.subheadline)
