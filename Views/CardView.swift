@@ -8,10 +8,16 @@ struct CardView: View {
 
         ZStack {
 
+            // BACK SIDE
             RoundedRectangle(cornerRadius: 14)
-                .fill(Color.blue.opacity(0.9))
+                .fill(Color.cardBackground)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(Color.accentSoft, lineWidth: 2)
+                )
                 .opacity(card.isFaceUp ? 0 : 1)
 
+            // FRONT SIDE
             RoundedRectangle(cornerRadius: 14)
                 .fill(card.color)
                 .opacity(card.isFaceUp ? 1 : 0)
@@ -21,12 +27,11 @@ struct CardView: View {
             .degrees(card.isFaceUp ? 180 : 0),
             axis: (x: 0, y: 1, z: 0)
         )
-        .shadow(radius: 4)
         .shadow(
-            color: card.isMatched ? card.color.opacity(0.9) : .clear,
-            radius: card.isMatched ? 14 : 0
+            color: card.isMatched ? card.color.opacity(0.4) : .black.opacity(0.08),
+            radius: card.isMatched ? 16 : 6
         )
         .scaleEffect(card.isMatched ? 1.05 : 1)
-        .animation(.spring(response: 0.5), value: card.isMatched)
+        .animation(.spring(response: 0.45), value: card.isMatched)
     }
 }
