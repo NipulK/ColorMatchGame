@@ -6,28 +6,19 @@ struct GameView: View {
     @StateObject var vm = GameViewModel()
 
     let level: GameLevel
-    let playerName: String   // ✅ NEW
+    let playerName: String
 
     var body: some View {
 
-        
         ZStack {
 
-            //  BACKGROUND
-            LinearGradient(
-                colors: [
-                    Color(hex: "#0F2027"),
-                    Color(hex: "#203A43"),
-                    Color(hex: "#2C5364")
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            //  LIGHT BACKGROUND
+            Color.appBackground
+                .ignoresSafeArea()
 
             VStack(spacing: 16) {
 
-                // 🔝 TOP BAR
+                //  TOP BAR
                 HStack {
 
                     Button {
@@ -35,25 +26,29 @@ struct GameView: View {
                     } label: {
                         Image(systemName: "chevron.left")
                             .font(.title3)
-                            .foregroundColor(.white)
+                            .foregroundColor(.primaryText)
                     }
 
                     Spacer()
+
+                    Text(playerName)
+                        .font(.subheadline)
+                        .foregroundColor(.secondaryText)
                 }
                 .padding(.horizontal)
-                .padding(.top, 10)
+                .padding(.top, 12)
 
                 // 🧠 HUD
                 VStack(spacing: 6) {
                     Text("Score \(vm.score)")
                         .font(.headline)
-                        .foregroundColor(.white)
+                        .foregroundColor(.primaryText)
 
                     Text(String(format: "Time %.2f s", vm.time))
                         .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(.secondaryText)
                 }
-                .padding(.top, 40)
+                .padding(.top, 16)
 
                 // ▶️ CONTROLS
                 if vm.state == .notStarted {
@@ -61,16 +56,16 @@ struct GameView: View {
                 }
 
                 if vm.state == .running {
-                    secondaryButton("PAUSE", color: .orange, action: vm.pauseGame)
+                    secondaryButton("PAUSE", color: .accent, action: vm.pauseGame)
                 }
 
                 if vm.state == .paused && !vm.isWin {
-                    secondaryButton("RESUME", color: .blue, action: vm.resumeGame)
+                    secondaryButton("RESUME", color: .accent, action: vm.resumeGame)
                 }
 
                 Spacer(minLength: 20)
 
-                // 🟦 GRID
+                // 🟦 CARD GRID
                 let columns = Array(
                     repeating: GridItem(.flexible()),
                     count: level.size
@@ -85,16 +80,16 @@ struct GameView: View {
                     }
                 }
                 .padding()
-                .background(Color.white.opacity(0.05))
+                .background(Color.cardBackground)
                 .cornerRadius(20)
+                .shadow(color: .black.opacity(0.08), radius: 12)
                 .padding(.horizontal)
-                .blur(radius: (vm.state != .running || vm.showCountdown || vm.isWin) ? 8 : 0)
-                .disabled(vm.state != .running || vm.showCountdown || vm.isWin)
+                .disabled(vm.state != .running)
 
                 Spacer()
             }
 
-            // 🏆 FINISH PANEL
+            // 🏆 FINISH OVERLAY
             if vm.showFinishPanel {
                 finishOverlay
             }
@@ -106,7 +101,7 @@ struct GameView: View {
         }
         .navigationBarBackButtonHidden(true)
         .onAppear {
-            vm.playerName = playerName   // ✅ SET PLAYER NAME
+            vm.playerName = playerName
             vm.start(level: level)
         }
     }
@@ -117,10 +112,10 @@ struct GameView: View {
         Button(action: action) {
             Text(title)
                 .font(.headline)
-                .foregroundColor(.black)
+                .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.white)
+                .background(Color.accent)
                 .cornerRadius(16)
         }
         .buttonStyle(PressableButtonStyle())
@@ -138,7 +133,7 @@ struct GameView: View {
                 .foregroundColor(.white)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 10)
-                .background(color.opacity(0.8))
+                .background(color)
                 .cornerRadius(12)
         }
         .buttonStyle(PressableButtonStyle())
@@ -148,38 +143,38 @@ struct GameView: View {
 
     private var finishOverlay: some View {
         ZStack {
-            Color.black.opacity(0.65).ignoresSafeArea()
+            Color.black.opacity(0.25).ignoresSafeArea()
 
             VStack(spacing: 14) {
-                Text("🏆 Level Completed")
-                    .font(.title2)
-                    .bold()
-                    .foregroundColor(.white)
+                Text("🎉 Level Completed")
+                    .font(.title2.bold())
+                    .foregroundColor(.primaryText)
 
                 Text(String(format: "Time %.2f s", vm.time))
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(.secondaryText)
 
                 Text("Score \(vm.score)")
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(.secondaryText)
 
                 primaryButton("PLAY AGAIN") {
                     vm.start(level: level)
                 }
             }
             .padding(24)
-            .background(Color(hex: "#1C1F2A"))
+            .background(Color.cardBackground)
             .cornerRadius(24)
+            .shadow(color: .black.opacity(0.15), radius: 15)
             .padding(.horizontal, 40)
         }
     }
 
     private var countdownOverlay: some View {
         ZStack {
-            Color.black.opacity(0.75).ignoresSafeArea()
+            Color.black.opacity(0.25).ignoresSafeArea()
 
             Text(vm.countdown > 0 ? "\(vm.countdown)" : "GO!")
                 .font(.system(size: 120, weight: .heavy))
-                .foregroundColor(.white)
+                .foregroundColor(.accent)
         }
     }
 }
