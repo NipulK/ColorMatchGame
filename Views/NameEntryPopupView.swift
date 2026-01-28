@@ -6,105 +6,66 @@ struct NameEntryPopupView: View {
     let onContinue: () -> Void
     let onCancel: () -> Void
 
-    private let accentColor: Color = .orange
-
     var body: some View {
 
         ZStack {
 
-            //  DIMMED BACKGROUND (same as Rules)
-            Color.black.opacity(0.7)
+            Color.black.opacity(0.25)
                 .ignoresSafeArea()
 
-            // 🧊 POPUP CARD
             VStack(spacing: 22) {
 
-                // 🔶 HEADER (IDENTICAL STRUCTURE)
+                // HEADER
                 VStack(spacing: 10) {
-                    ZStack {
-                        Circle()
-                            .fill(accentColor.opacity(0.25))
-                            .frame(width: 64, height: 64)
-
-                        Image(systemName: "person.fill")
-                            .font(.system(size: 28))
-                            .foregroundColor(accentColor)
-                    }
+                    Circle()
+                        .fill(Color.accentSoft)
+                        .frame(width: 64, height: 64)
+                        .overlay(
+                            Image(systemName: "person.fill")
+                                .foregroundColor(.accent)
+                                .font(.system(size: 26))
+                        )
 
                     Text("Enter Your Name")
-                        .font(.system(size: 26, weight: .bold))
-                        .foregroundColor(.white)
+                        .font(.title2.bold())
+                        .foregroundColor(.primaryText)
 
                     Text("This name will appear on the scoreboard")
                         .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(.secondaryText)
                 }
 
                 Divider()
-                    .background(Color.white.opacity(0.2))
 
-                // 👤 CONTENT BLOCK (REPLACES RULE LIST)
-                VStack(alignment: .leading, spacing: 14) {
+                // INPUT
+                TextField("Player name", text: $playerName)
+                    .padding()
+                    .background(Color.appBackground)
+                    .cornerRadius(12)
+                    .multilineTextAlignment(.center)
 
-                    HStack(spacing: 12) {
-                        Image(systemName: "checkmark.seal.fill")
-                            .foregroundColor(accentColor)
-
-                        Text("Enter a name to track your score")
-                            .font(.callout)
-                            .foregroundColor(.white.opacity(0.9))
-                    }
-
-                    TextField("Player name", text: $playerName)
-                        .padding()
-                        .background(Color.white.opacity(0.12))
-                        .foregroundColor(.white)
-                        .cornerRadius(14)
-                        .multilineTextAlignment(.center)
-                        .textInputAutocapitalization(.words)
-
-                    if playerName.trimmingCharacters(in: .whitespaces).isEmpty {
-                        Text("Please enter your name to continue")
-                            .font(.caption)
-                            .foregroundColor(.red.opacity(0.85))
-                            .padding(.leading, 34) // aligns with text like rules
-                    }
-                }
-
-                // ▶️ CONTINUE BUTTON (MATCHES RULES BUTTON)
+                // CONTINUE
                 Button {
-                    if !playerName.trimmingCharacters(in: .whitespaces).isEmpty {
+                    if !playerName.isEmpty {
                         onContinue()
                     }
                 } label: {
                     Text("CONTINUE")
                         .font(.headline)
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(accentColor)
+                        .background(Color.accent)
                         .cornerRadius(14)
                 }
-                .buttonStyle(PressableButtonStyle())
-                .padding(.top, 8)
 
-                // ❌ CANCEL (same position as rules text bottom)
-                Button {
-                    onCancel()
-                } label: {
-                    Text("Cancel")
-                        .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.75))
-                }
+                Button("Cancel", action: onCancel)
+                    .foregroundColor(.secondaryText)
             }
             .padding(24)
-            .background(
-                RoundedRectangle(cornerRadius: 26)
-                    .fill(Color(hex: "#1C1F2A"))
-                    .shadow(color: accentColor.opacity(0.35), radius: 20)
-            )
+            .background(Color.cardBackground)
+            .cornerRadius(26)
             .padding(.horizontal, 28)
         }
-        .transition(.scale.combined(with: .opacity))
     }
 }
