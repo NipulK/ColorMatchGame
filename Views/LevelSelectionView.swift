@@ -31,6 +31,7 @@ struct LevelSelectionView: View {
 
                 Spacer(minLength: 20)
 
+                
                 // 🟢 EASY
                 levelCard(
                     title: "Easy",
