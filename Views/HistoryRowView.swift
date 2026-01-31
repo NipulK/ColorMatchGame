@@ -29,7 +29,7 @@ struct HistoryRowView: View {
 
                 HStack(spacing: 8) {
 
-                    // 🎯 LEVEL BADGE
+                    //  LEVEL BADGE
                     Text(levelText)
                         .font(.caption.bold())
                         .foregroundColor(levelColor)

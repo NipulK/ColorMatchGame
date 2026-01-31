@@ -5,6 +5,8 @@ struct GameView: View {
     @Environment(\.dismiss) var dismiss
     @StateObject var vm = GameViewModel()
     @State private var showConfetti = false //show game win animation
+    
+    @State private var showNamePopup = false
 
     let level: GameLevel
     let playerName: String
@@ -91,6 +93,21 @@ struct GameView: View {
 
                 Spacer()
             }
+
+            // 🧾 NAME ENTRY POPUP
+            if showNamePopup {
+                NameEntryPopupView(
+                    playerName: $vm.playerName,
+                    onContinue: {
+                        vm.saveScoreToFirebase()
+                        showNamePopup = false
+                        vm.showFinishPanel = false
+                    },
+                    onCancel: {
+                        showNamePopup = false
+                    }
+                )
+            }
             
             //  CONFETTI
             if showConfetti {
@@ -113,13 +130,14 @@ struct GameView: View {
             vm.playerName = playerName
             vm.start(level: level)
         }
+        
         .onChange(of: vm.isWin) { win in
             if win {
                 showConfetti = true
-
                 // Auto-hide confetti after 3 seconds
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                     showConfetti = false
+                    showNamePopup = true
                 }
             }
         }
