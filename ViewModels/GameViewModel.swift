@@ -4,6 +4,7 @@ import UIKit
 
 class GameViewModel: ObservableObject {
 
+    // MARK: - Published State
     @Published var cards: [CardModel] = []
     @Published var score: Int = 0
     @Published var isWin = false
@@ -12,23 +13,26 @@ class GameViewModel: ObservableObject {
     @Published var countdown: Int = 3
     @Published var showCountdown = false
     @Published var showFinishPanel = false
-    
+
+    // Player / Firebase
     @Published var playerName: String = ""
     @Published var finalScore: Int = 0
     @Published var finalTime: Double = 0
-    
-    private(set) var currentLevel: GameLevel?
 
-    var timer: Timer?
+    // MARK: - Internal State
+    private(set) var currentLevel: GameLevel?
+    private var timer: Timer?
     private var firstIndex: Int? = nil
     private var didSaveResult = false
 
+    // MARK: - Game State
     enum GameState {
         case notStarted
         case running
         case paused
     }
 
+    // MARK: - Setup
     func start(level: GameLevel) {
 
         currentLevel = level
@@ -36,9 +40,11 @@ class GameViewModel: ObservableObject {
 
         cards.removeAll()
         score = 0
+        time = 0
+        finalScore = 0
+        finalTime = 0
         firstIndex = nil
         isWin = false
-        time = 0
         showFinishPanel = false
         state = .notStarted
 
@@ -65,6 +71,7 @@ class GameViewModel: ObservableObject {
         cards = colors.map { CardModel(color: $0) }
     }
 
+    // MARK: - Game Flow
     func startGame() {
 
         showCountdown = true
@@ -98,6 +105,7 @@ class GameViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Card Logic
     func selectCard(index: Int) {
 
         guard state == .running else { return }
@@ -112,30 +120,6 @@ class GameViewModel: ObservableObject {
             firstIndex = index
         }
     }
-    
-    func saveScoreToFirebase() {
-
-        guard !playerName.trimmingCharacters(in: .whitespaces).isEmpty else {
-            print("❌ Player name is empty")
-            return
-        }
-
-        let result = PlayerScore(
-            playerName: playerName,
-            level: currentLevel?.rawValue ?? "unknown",
-            timeSpent: time,
-            points: score
-        )
-
-        FirebaseScoreManager.shared.saveScore(result) { result in
-            switch result {
-            case .success:
-                print("✅ Score saved to Firebase")
-            case .failure(let error):
-                print("❌ Firebase error:", error.localizedDescription)
-            }
-        }
-    }
 
     private func checkMatch(first: Int, second: Int) {
 
@@ -145,7 +129,6 @@ class GameViewModel: ObservableObject {
             cards[second].isMatched = true
             score += 1
 
-            // ✅ Light match haptic
             playImpact(.light)
 
             let allMatched = cards.allSatisfy {
@@ -164,26 +147,30 @@ class GameViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Win Handling
     private func handleGameWin() {
 
         guard !didSaveResult, let level = currentLevel else { return }
 
+        // 🔒 FREEZE FINAL VALUES
+        finalScore = score
+        finalTime = time
+
         didSaveResult = true
         isWin = true
 
-        // 🏆 Strong success haptic
         playSuccess()
 
         timer?.invalidate()
         state = .paused
 
+        // Local scoreboard save
         let result = GameResult(
             playerName: playerName,
-            score: score,
-            time: time,
+            score: finalScore,
+            time: finalTime,
             level: level
         )
-
         ScoreboardManager.shared.save(result)
 
         Task {
@@ -195,6 +182,31 @@ class GameViewModel: ObservableObject {
     func showFinishWithDelay() async {
         try? await Task.sleep(nanoseconds: 1_000_000_000)
         showFinishPanel = true
+    }
+
+    // MARK: - Firebase Save
+    func saveScoreToFirebase() {
+
+        guard !playerName.trimmingCharacters(in: .whitespaces).isEmpty else {
+            print("❌ Player name is empty")
+            return
+        }
+
+        let scoreData = PlayerScore(
+            playerName: playerName,
+            level: currentLevel?.rawValue ?? "unknown",
+            timeSpent: finalTime,
+            points: finalScore
+        )
+
+        FirebaseScoreManager.shared.saveScore(scoreData) { result in
+            switch result {
+            case .success:
+                print("✅ Score saved to Firebase")
+            case .failure(let error):
+                print("❌ Firebase error:", error.localizedDescription)
+            }
+        }
     }
 
     // MARK: - Haptics
