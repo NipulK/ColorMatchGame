@@ -131,6 +131,7 @@ struct GameView: View {
             vm.start(level: level)
         }
         
+        
         .onChange(of: vm.isWin) { win in
             if win {
                 showConfetti = true
