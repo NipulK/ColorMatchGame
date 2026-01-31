@@ -4,15 +4,16 @@ import UIKit
 
 class GameViewModel: ObservableObject {
 
-    // MARK: - Published State
+    // MARK: - Published UI State
     @Published var cards: [CardModel] = []
     @Published var score: Int = 0
-    @Published var isWin = false
     @Published var time: Double = 0
+    @Published var isWin: Bool = false
+
     @Published var state: GameState = .notStarted
     @Published var countdown: Int = 3
-    @Published var showCountdown = false
-    @Published var showFinishPanel = false
+    @Published var showCountdown: Bool = false
+    @Published var showFinishPanel: Bool = false
 
     // Player / Firebase
     @Published var playerName: String = ""
@@ -23,16 +24,16 @@ class GameViewModel: ObservableObject {
     private(set) var currentLevel: GameLevel?
     private var timer: Timer?
     private var firstIndex: Int? = nil
-    private var didSaveResult = false
+    private var didSaveResult: Bool = false
 
-    // MARK: - Game State
+    // MARK: - Game State Enum
     enum GameState {
         case notStarted
         case running
         case paused
     }
 
-    // MARK: - Setup
+    // MARK: - Game Setup
     func start(level: GameLevel) {
 
         currentLevel = level
@@ -105,7 +106,7 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Card Logic
+    // MARK: - Card Interaction
     func selectCard(index: Int) {
 
         guard state == .running else { return }
@@ -147,12 +148,12 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Win Handling
+    // MARK: - Game Win Handling
     private func handleGameWin() {
 
         guard !didSaveResult, let level = currentLevel else { return }
 
-        // 🔒 FREEZE FINAL VALUES
+        // 🔒 Freeze final values
         finalScore = score
         finalTime = time
 
@@ -179,7 +180,7 @@ class GameViewModel: ObservableObject {
     }
 
     @MainActor
-    func showFinishWithDelay() async {
+    private func showFinishWithDelay() async {
         try? await Task.sleep(nanoseconds: 1_000_000_000)
         showFinishPanel = true
     }
@@ -209,7 +210,6 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    
     // MARK: - Haptics
     private func playImpact(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
         let generator = UIImpactFeedbackGenerator(style: style)
