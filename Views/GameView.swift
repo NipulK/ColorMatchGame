@@ -3,32 +3,26 @@ import SwiftUI
 struct GameView: View {
 
     @Environment(\.dismiss) var dismiss
-    @StateObject var vm = GameViewModel()
-    @State private var showConfetti = false //show game win animation
-    
+    @StateObject private var vm = GameViewModel()
+
+    @State private var showConfetti = false
     @State private var showNamePopup = false
 
     let level: GameLevel
     let playerName: String
 
     var body: some View {
-        
-        
 
         ZStack {
 
-            //  LIGHT BACKGROUND
             Color.appBackground
                 .ignoresSafeArea()
 
             VStack(spacing: 16) {
 
-                //  TOP BAR
+                // TOP BAR
                 HStack {
-
-                    Button {
-                        dismiss()
-                    } label: {
+                    Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
                             .font(.title3)
                             .foregroundColor(.primaryText)
@@ -43,7 +37,7 @@ struct GameView: View {
                 .padding(.horizontal)
                 .padding(.top, 12)
 
-                // 🧠 HUD
+                // HUD
                 VStack(spacing: 6) {
                     Text("Score \(vm.score)")
                         .font(.headline)
@@ -55,7 +49,7 @@ struct GameView: View {
                 }
                 .padding(.top, 16)
 
-                // ▶️ CONTROLS
+                // CONTROLS
                 if vm.state == .notStarted {
                     primaryButton("START GAME", action: vm.startGame)
                 }
@@ -70,11 +64,8 @@ struct GameView: View {
 
                 Spacer(minLength: 20)
 
-                // 🟦 CARD GRID
-                let columns = Array(
-                    repeating: GridItem(.flexible()),
-                    count: level.size
-                )
+                // CARD GRID
+                let columns = Array(repeating: GridItem(.flexible()), count: level.size)
 
                 LazyVGrid(columns: columns, spacing: 12) {
                     ForEach(vm.cards.indices, id: \.self) { i in
@@ -94,33 +85,33 @@ struct GameView: View {
                 Spacer()
             }
 
-            // 🧾 NAME ENTRY POPUP
+            // CONFETTI
+            if showConfetti {
+                ConfettiView()
+            }
+
+            // GAME COMPLETE POPUP (STEP 1)
+            if vm.showFinishPanel {
+                finishOverlay
+            }
+
+            // NAME ENTRY POPUP (STEP 2)
             if showNamePopup {
                 NameEntryPopupView(
                     playerName: $vm.playerName,
                     onContinue: {
                         vm.saveScoreToFirebase()
                         showNamePopup = false
-                        vm.showFinishPanel = false
+                        dismiss() // ⬅️ BACK TO LEVEL SELECTION
                     },
                     onCancel: {
                         showNamePopup = false
+                        dismiss()
                     }
                 )
             }
-            
-            //  CONFETTI
-            if showConfetti {
-                ConfettiView()
-                    .transition(.opacity)
-            }
 
-            // 🏆 FINISH OVERLAY
-            if vm.showFinishPanel {
-                finishOverlay
-            }
-
-            // ⏱ COUNTDOWN
+            // COUNTDOWN
             if vm.showCountdown {
                 countdownOverlay
             }
@@ -130,15 +121,11 @@ struct GameView: View {
             vm.playerName = playerName
             vm.start(level: level)
         }
-        
-        
         .onChange(of: vm.isWin) { win in
             if win {
                 showConfetti = true
-                // Auto-hide confetti after 3 seconds
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                     showConfetti = false
-                    showNamePopup = true
                 }
             }
         }
@@ -184,24 +171,24 @@ struct GameView: View {
             Color.black.opacity(0.25).ignoresSafeArea()
 
             VStack(spacing: 14) {
-                Text("🎉 Level Completed")
+                Text("🎉 Game Completed")
                     .font(.title2.bold())
                     .foregroundColor(.primaryText)
 
-                Text(String(format: "Time %.2f s", vm.time))
+                Text("Time \(String(format: "%.2f", vm.finalTime)) s")
                     .foregroundColor(.secondaryText)
 
-                Text("Score \(vm.score)")
+                Text("Score \(vm.finalScore)")
                     .foregroundColor(.secondaryText)
 
-                primaryButton("PLAY AGAIN") {
-                    vm.start(level: level)
+                primaryButton("OK") {
+                    vm.showFinishPanel = false
+                    showNamePopup = true
                 }
             }
             .padding(24)
             .background(Color.cardBackground)
             .cornerRadius(24)
-            .shadow(color: .black.opacity(0.15), radius: 15)
             .padding(.horizontal, 40)
         }
     }
@@ -209,7 +196,6 @@ struct GameView: View {
     private var countdownOverlay: some View {
         ZStack {
             Color.black.opacity(0.25).ignoresSafeArea()
-
             Text(vm.countdown > 0 ? "\(vm.countdown)" : "GO!")
                 .font(.system(size: 120, weight: .heavy))
                 .foregroundColor(.accent)
