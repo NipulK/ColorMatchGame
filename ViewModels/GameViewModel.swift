@@ -12,9 +12,11 @@ class GameViewModel: ObservableObject {
     @Published var countdown: Int = 3
     @Published var showCountdown = false
     @Published var showFinishPanel = false
-
-    @Published var playerName: String = "Player"
-
+    
+    @Published var playerName: String = ""
+    @Published var finalScore: Int = 0
+    @Published var finalTime: Double = 0
+    
     private(set) var currentLevel: GameLevel?
 
     var timer: Timer?
@@ -108,6 +110,30 @@ class GameViewModel: ObservableObject {
             firstIndex = nil
         } else {
             firstIndex = index
+        }
+    }
+    
+    func saveScoreToFirebase() {
+
+        guard !playerName.trimmingCharacters(in: .whitespaces).isEmpty else {
+            print("❌ Player name is empty")
+            return
+        }
+
+        let result = PlayerScore(
+            playerName: playerName,
+            level: currentLevel?.rawValue ?? "unknown",
+            timeSpent: time,
+            points: score
+        )
+
+        FirebaseScoreManager.shared.saveScore(result) { result in
+            switch result {
+            case .success:
+                print("✅ Score saved to Firebase")
+            case .failure(let error):
+                print("❌ Firebase error:", error.localizedDescription)
+            }
         }
     }
 
