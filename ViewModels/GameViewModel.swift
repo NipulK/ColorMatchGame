@@ -209,6 +209,7 @@ class GameViewModel: ObservableObject {
         }
     }
 
+    
     // MARK: - Haptics
     private func playImpact(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
         let generator = UIImpactFeedbackGenerator(style: style)
